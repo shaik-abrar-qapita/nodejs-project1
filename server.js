@@ -2,7 +2,8 @@ console.log("Express server");
 
 const dotenv = require("dotenv").config();
 const express = require("express");
-const Routers = require("./Routes/ContactRoute");
+const contactRouter = require("./Routes/ContactRoute");
+const userRouter = require("./Routes/userRoute");
 const errorHandler = require("./Middlewares/errorhandler");
 const connectDb = require("./Config/dbConnection");
 
@@ -11,7 +12,9 @@ connectDb();
 
 app.use(express.json());
 
-app.use("/api/contacts", Routers);
+app.use("/api/contacts", contactRouter);
+
+app.use("/api/user", userRouter);
 
 app.use(errorHandler);
 
