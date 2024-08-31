@@ -1,6 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const Contacts = require("../Models/contactModel");
+const mongoose = require("express");
 
 const getAllContacts = asyncHandler(async (req, res) => {
   const result = await Contacts.find();
@@ -32,7 +33,10 @@ const addNewContact = asyncHandler(async (req, res) => {
 });
 
 const deleteContact = asyncHandler(async (req, res) => {
-  console.log(req.body);
+  console.log(req.params);
+  console.log("params id", req.params.id);
+
+  // const id = await mongoose.Types.ObjectId(req.params.id);
 
   const result = await Contacts.deleteOne({ _id: req.params.id });
   console.log("delete", result);
