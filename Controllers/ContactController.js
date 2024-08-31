@@ -1,31 +1,64 @@
 const express = require("express");
+const asyncHandler = require("express-async-handler");
+const Contacts = require("../Models/contactModel");
 
-const getAllContacts = (req, res) => {
-  res.status(200).json({ message: "Get All Contacts" });
-};
+const getAllContacts = asyncHandler(async (req, res) => {
+  const result = await Contacts.find();
 
-const getContactById = (req, res) => {
-  res.status(200).json({ message: `Get Contact By Id ${req?.params?.id}` });
-};
+  res.status(200).json(result);
+});
 
-const addNewContact = (req, res) => {
-  res.status(201).json({ message: "Contact has been created Successfully!" });
-};
+const getContactById = asyncHandler(async (req, res) => {
+  const result = await Contacts.findById(req?.params?.id);
+  console.log("findOne", result);
 
-const deleteContact = (req, res) => {
+  if (!result) {
+    res.status(404);
+    throw new Error("The contact with the id is not found!");
+  }
+  res.status(200).json(result);
+});
+
+const addNewContact = asyncHandler(async (req, res) => {
+  const { name, email, phone } = req?.body;
+
+  if (!name || !email || !phone) {
+    res.status(400);
+    throw new Error("All fields are mandatory!");
+  }
+
+  const result = await Contacts.create(req.body);
+  res.status(201).json(result);
+});
+
+const deleteContact = asyncHandler(async (req, res) => {
   console.log(req.body);
+
+  const result = await Contacts.deleteOne({ _id: req.params.id });
+  console.log("delete", result);
+  if (result.deletedCount === 0) {
+    res.status(404);
+    throw new Error("Cannot find the Contact");
+  }
 
   res.status(200).json({
     message: `${req.params.id} contact has been deleted successfully`,
   });
-};
+});
 
-const updateContact = (req, res) => {
-  res.status(200).json({
-    message: `${req.params.id} contact has been updated successfully`,
-    body: req.body,
+const updateContact = asyncHandler(async (req, res) => {
+  const existingContact = await Contacts.findById(req.params.id);
+  if (!existingContact) {
+    res.status(404);
+    throw new Error("The contact with the id is not found!");
+  }
+
+  const result = await Contacts.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
   });
-};
+
+  res.status(200).json(result);
+});
 
 module.exports = {
   getAllContacts,
