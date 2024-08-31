@@ -1,15 +1,15 @@
 console.log("Express server");
-console.log("line 2");
 
 const express = require("express");
+const dotenv = require("dotenv").config();
 
 const app = express();
 
-const dotenv = require("dotenv").config();
+app.use(express.json());
+
+app.use("/api/contacts", require("./Routes/ContactRoute"));
 
 const p = process.env.PORT;
-
-console.log(p, "abrar");
 
 app.listen(p, () => {
   console.log("inside app", p);
